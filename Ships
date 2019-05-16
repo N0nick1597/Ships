@@ -1,0 +1,137 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+int const Cmax=100;
+class player{
+	private:
+		int a;
+		char PBOARD[Cmax][Cmax];// zaidejo lentele su laivais
+	protected:
+		char BOARD[Cmax][Cmax];
+		int A, B, C, D, E, F, G, H, I, J;
+	public:
+		player(){
+			A=1; B=2; C=3; D=4; E=5; F=6; G=7; H=8; I=9; J=10;
+		}
+		void boardprinting(char BOARD[Cmax][Cmax]){
+			for(int i=0; i<10; i++){
+				if(i!=0){
+					cout<<endl;	
+				}
+				if(i==0){
+					cout<<"   ";
+					for(char q='A'; q<='J'; q++){
+						cout<<q<<" ";
+					}
+					cout<<endl;
+				}
+				for(int j=0; j<10; j++){
+					if(j==0){
+						if(a==9){
+						cout<<"10 ";
+					}
+					else{
+						a++;
+						cout<<a<<"  ";
+					}
+					}
+					BOARD[i][j]='-';
+					cout<<BOARD[i][j]<< " ";
+				}
+			}
+		}
+		void show(char BOARD[Cmax][Cmax]){
+			int a=0;
+			for(int i=0; i<10; i++){
+				if(i!=0){
+					cout<<endl;	
+				}
+				if(i==0){
+					cout<<"   ";
+					for(char q='A'; q<='J'; q++){
+						cout<<q<<" ";
+					}
+					cout<<endl;
+				}
+				for(int j=0; j<10; j++){
+					if(j==0){
+						if(a==9){
+						cout<<"10 ";
+					}
+					else{
+						a++;
+						cout<<a<<"  ";
+					}
+					}
+					cout<<BOARD[i][j]<<" ";
+				}
+			}
+		}
+};
+/**************************************************************************************************************************************************************************/
+class computer: public player{
+	private:
+		char CBOARD[Cmax][Cmax];//Kompiuterio lentele su laivais
+		char LETTERS[Cmax], let;
+		int NUMBERS[Cmax], numb;
+		int DIRECTION[Cmax], dir;
+	public:
+		void randoms(){
+			char LETTERS[11]={'J', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+			let=LETTERS[rand()%10 + 1];
+			//////////////////////////////////////////////////////// Raidziu random
+			cout<<endl;
+			cout<<let<<" CHAR"<<endl;		
+			int NUMBERS[11]={10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+			numb=NUMBERS[rand()%10 + 1];
+			/////////////////////////////////////////////////////// Skaiciu random
+			cout<<numb<<" INT"<<endl;
+			int DIRECTION[5]={4, 1, 2, 3, 4};
+			dir=DIRECTION[rand()%4 + 1];
+			//////////////////////////////////////////////////////  Krypties random 1- desine, 2- kaire, 3- virsus, 4-apacia
+			cout<<dir<<" direction";
+		}
+		void randomships(){
+			randoms();
+			if(dir==1||dir==2){
+				for(int i=let; i<let+4; i++){
+					//CBOARD[i][numb]=='L';
+					cout<<CBOARD[i][numb]<<"AAAAA";
+				}
+				cout<<endl;
+			//	cout<<"AAAA"<<endl;
+			}
+			else if(dir==3||dir==4){
+				for(int j=numb; j<numb+4; j++){
+					//CBOARD[let][j]=='L';
+					cout<<CBOARD[let][j]<<"BBBBBB";
+				}
+				cout<<endl;
+			}
+			show(CBOARD);
+		}
+		
+};
+/***************************************************************************************************************************************************************************/
+int main(){
+	srand (time(NULL));
+	char CBOARD[Cmax][Cmax], PBOARD[Cmax][Cmax];
+	player A;
+	computer B;
+	////////////////////////////////////////
+	cout<<"Zaidejo zemelapis"<<endl;	////
+	A.boardprinting(PBOARD);			////
+	cout<<endl;							////
+	cout<<"----------------------";		////		Zemelapiu isspausdinimas i ekrana
+	cout<<endl;;						////
+	cout<<"Kompiuterio zemelapis"<<endl;////
+	B.boardprinting(CBOARD);			////
+	////////////////////////////////////////
+	B.randomships();
+	cout<<endl;
+	return 0;
+}
