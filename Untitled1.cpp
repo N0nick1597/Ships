@@ -4,31 +4,42 @@
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
+#include <stdlib.h>
 using namespace std;
-int const Cmax=100;
+int const Cmax=11;
 class player{
 	private:
 		int a;
-		char PBOARD[Cmax][Cmax];// zaidejo lentele su laivais
-		char letter;
 		int number;
 		int direction;
-		int lett;
 	protected:
-		char BOARD[Cmax][Cmax];
+	    int lett;
+		string letter;
+		string **PBOARD;// zaidejo lentele su laivais
+		int shoot;
 	public:
 		player(){
-			//A=1; B=2; C=3; D=4; E=5; F=6; G=7; H=8; I=9; J=10;
+			a=0;
+			PBOARD= new string*[Cmax];
+			for(int i=0; i<Cmax; i++){
+				PBOARD[i]=new string[Cmax];
+			}
+			for(int i=0; i<10; i++){
+				for(int j=0; j<10; j++){
+					PBOARD[i][j]="+";
+				}
+			}
 		}
-		void boardprinting(char BOARD[Cmax][Cmax]){
+		/*void boardprinting(string BOARD[10][10]){
+			string l [10]={"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 			for(int i=0; i<10; i++){
 				if(i!=0){
 					cout<<endl;	
 				}
 				if(i==0){
 					cout<<"   ";
-					for(char q='A'; q<='J'; q++){
-						cout<<q<<" ";
+					for(int i=0; i<10; i++){
+						cout<<l[i]<<" ";
 					}
 					cout<<endl;
 				}
@@ -42,43 +53,54 @@ class player{
 						cout<<a<<"  ";
 					}
 					}
-					BOARD[i][j]='-';
+					else{
+					BOARD[i][j]="+";
 					cout<<BOARD[i][j]<< " ";
+					}
 				}
 			}
-		}
+		}*/
 		void ships(int size){ 
 			cout<<"iveskite laivo krypti (1- desine, 2- kaire, 3- apacia, 4- virsus)"<<endl;
 			cin>>direction;
 			cout<<"Iveskite laivo pradine koordinate, pvz: A 5"<<endl;
 			cin>>letter>>number;
-			convert();
+			convert(letter);
 			if(direction==1){
 				for(int i=lett; i<lett+size; i++){
-					PBOARD[i][number]='*';
+					PBOARD[number-1][i]="O";
 				}
-				show(PBOARD);
+				//show(PBOARD);
 			}
 			else if(direction==2){
-				for(int i=lett+size; i>lett; i--){
-					PBOARD[i][number]='*';
+				for(int i=lett; i>lett-size; i--){
+					PBOARD[number-1][i]="O";
 				}
-				show(PBOARD);
+				//show(PBOARD);
 			}
 			else if(direction==3){
 				for(int i=number; i<number+size; i++){
-					PBOARD[lett][i]='*';
+					PBOARD[i-1][lett]="O";
 				}
-				show(PBOARD);
+				//show(PBOARD);
 			}
 			else if(direction==4){
-				for(int i=number+size; i>number; i--){
-					PBOARD[lett][i]='*';
+				for(int i=number; i>number-size; i--){
+					PBOARD[i-1][lett]="O";
 				}
-				show(PBOARD);
+				//show(PBOARD);
 			}
+			for(int i=0; i<=9; i++){
+				for(int j=0; j<=9; j++){
+					if(PBOARD[i][j]!="O"){
+						PBOARD[i][j]="+";
+					}
+				}
+			}
+			show(PBOARD);
 		}
-		void show(char BOARD[Cmax][Cmax]){
+		void show(string **BOARD){
+			string l [10]={"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 			int a=0;
 			for(int i=0; i<10; i++){
 				if(i!=0){
@@ -86,8 +108,8 @@ class player{
 				}
 				if(i==0){
 					cout<<"   ";
-					for(char q='A'; q<='J'; q++){
-						cout<<q<<" ";
+					for(int q=1; q<10; q++){
+						cout<<l[q]<<" ";
 					}
 					cout<<endl;
 				}
@@ -105,107 +127,326 @@ class player{
 				}
 			}
 		}
-		convert(){
-			if(letter=='A'){
+		convert(string letter){
+			if(letter=="A"){
+				lett=0;
+			}
+			else if(letter=="B"){
 				lett=1;
 			}
-			else if(letter=='B'){
+			else if(letter=="C"){
 				lett=2;
 			}
-			else if(letter=='C'){
+			else if(letter=="D"){
 				lett=3;
 			}
-			else if(letter=='D'){
+			else if(letter=="E"){
 				lett=4;
 			}
-			else if(letter=='E'){
+			else if(letter=="F"){
 				lett=5;
 			}
-			else if(letter=='F'){
+			else if(letter=="G"){
 				lett=6;
 			}
-			else if(letter=='G'){
+			else if(letter=="H"){
 				lett=7;
 			}
-			else if(letter=='H'){
+			else if(letter=="I"){
 				lett=8;
 			}
-			else if(letter=='I'){
+			else if(letter=="J"){
 				lett=9;
 			}
-			else if(letter=='J'){
-				lett=10;
+		}
+		/*bool hit(pair<int, int> shot){
+			if(PBOARD[shot.first][shot.second]=="O"){
+				PBOARD[shot.first][shot.second]="X";
+				return true;
 			}
+			else{
+				PBOARD[shot.first][shot.second]="-";
+				return false;
+			}
+		}*/
+		~player(){
+			for(int i=0; i<Cmax; i++){
+				delete PBOARD[i];
+			}
+			delete [] PBOARD;
 		}
 };
 /**************************************************************************************************************************************************************************/
 class computer: public player{
+	private:
+		int count;
 	protected:
-		char CBOARD[Cmax][Cmax];//Kompiuterio lentele su laivais
+		string **CBOARD;//Kompiuterio lentele su laivais
 		int LETTERS[Cmax], let;
 		int NUMBERS[Cmax], numb;
 		int DIRECTION[Cmax], dir;
+		int DIRECT[Cmax], direc;
 	public:
+		computer(){
+			count=1;
+			CBOARD= new string*[Cmax];
+			for(int i=0; i<Cmax; i++){
+				CBOARD[i]=new string[Cmax];
+			}
+			for(int i=0; i<10; i++){
+				for(int j=0; j<10; j++){
+					CBOARD[i][j]="+";
+				}
+			}
+		}
 		void randoms(){
-			int LETTERS[11]={10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-			let=LETTERS[rand()%10 + 1];
-			//////////////////////////////////////////////////////// Raidziu random
-			//cout<<endl;
-		//	cout<<let<<" CHAR"<<endl;		
-			int NUMBERS[11]={10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-			numb=NUMBERS[rand()%10 + 1];
+			int LETTERS[10]={0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+			let=LETTERS[rand()%10];
+			//////////////////////////////////////////////////////// Raidziu random		
+			int NUMBERS[10]={0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+			numb=NUMBERS[rand()%10];
 			/////////////////////////////////////////////////////// Skaiciu random
-		//	cout<<numb<<" INT"<<endl;
 			int DIRECTION[5]={4, 1, 2, 3, 4};
 			dir=DIRECTION[rand()%4 + 1];
 			//////////////////////////////////////////////////////  Krypties random 1- desine, 2- kaire, 3- virsus, 4-apacia
-		//	cout<<dir<<" direction";
+			int DIRECT[2]={1, 3 };
+			direc=DIRECT[rand()%2];
 		}
 		void randomships(int n){
+			int ind = n;
 			randoms();
-			if(dir==1){
-				for(int i=let; i<let+n; i++){
-					CBOARD[i][numb]='B';
+			if(direc==1){
+				if(let+n-1<=9&&checking(n, direc, CBOARD, numb+1, let+1)){
+					for(int i=let; i<let+n; i++){
+						if(CBOARD[numb][i]!="O"){
+							CBOARD[numb][i]="O";
+						}
+						else{
+						randoms();
+						randomships(ind);
+						}
+					}
+				}
+				else{
+					randoms();
+					randomships(ind);
+					
 				}
 			}
-			else if(dir==2){
-				for(int i=let+n; i>let; i--){
-					CBOARD[i][numb]=='B';
+			if(direc==3){
+				if(numb+n-1<=9&&checking(n, direc, CBOARD, numb+1, let+1)){
+					for(int j=numb; j<numb+n; j++){
+						if(CBOARD[j][let]!="O"){
+							CBOARD[j][let]="O";
+						}
+						else{
+						randoms();
+			            randomships(ind);
+						}
+					}
+				}
+				else{
+				randoms();
+				randomships(ind);
 				}
 			}
-			else if(dir==3){
-				for(int i=numb; i<numb+n; i++){
-					CBOARD[let][i]=='B';
+			cout<<endl;
+			show(CBOARD);
+	}
+		void shooting(){
+			cout<<"iveskite koordinate i kuria norite sauti"<<endl;
+			cin>>letter>>shoot;
+			convert(letter);
+			cout<<lett;
+			cout<<endl;
+			if(CBOARD[lett][shoot]=="O"){
+				CBOARD[lett][shoot]=="X";
+				cout<<"Pataikete!"<<endl;
+			}
+			else{
+				CBOARD[lett][shoot]=="-";
+				cout<<endl;
+				cout<<"nepataikete"<<endl;
+			}
+		}
+		void randomshooting(){
+			randoms();
+			if(PBOARD[let][numb]=="O"){
+				PBOARD[let][numb]="X";
+				smartshooting();
+			}
+			else{
+				PBOARD[let][numb]="-";
+			}
+			show(PBOARD);
+		}
+		bool checking(int n, int dir, string **BOARD, int numb, int let){
+				if(dir==1){
+					for(int i=let; i<let+n; i++){
+						if (BOARD[numb-1][i]=="O"){
+							return false;
+						}
+						else{
+							return true;
+						}
+					}
+				}
+				else if(dir==2){
+					for(int i=let; i>let-n; i--){
+						if(BOARD[numb-1][i]=="O"){
+							return false;
+						}
+						else{
+							return true;
+						}
+					}
+				}
+				else if(dir==3){
+					for(int i=numb; i<numb+n; i++){
+						if(BOARD[i-1][let]=="O"){
+							return false;
+						}
+						else{
+							return true;
+						}
+					}
+				}
+				else if(dir==4){
+					for(int i=numb; i>numb-n; i--){
+						if(BOARD[i-1][let]=="O"){
+							return false;
+						}
+						else{
+							return true;
+						}
+					}
+				}
+		}
+		void smartshooting(){
+			if(count==1){
+				if(PBOARD[numb-1][let+1]=="O"){
+					PBOARD[numb-1][let+1]="X";
+					for(int i=let+2; i<let+4; i++){
+						PBOARD[numb-1][i]="O";
+						if(PBOARD[numb-1][i]!="O"){
+							break;
+							count=0;
+							randomshooting();
+						}
+						else{
+							if(PBOARD[numb-1][let+1]!="O"){
+								PBOARD[numb-1][let+1]="-";
+								randomshooting();
+							}
+							count=2;
+							//atiduodam ejima
+						}
+						}
 				}
 			}
-			else if(dir==4){
-				for(int i=numb+n; i>numb; i--){
-					CBOARD[let][i]=='B';
+			else if(count==2){
+				if(PBOARD[numb-1][let-1]=="O"){
+					PBOARD[numb-1][let-1]="X";
+					for(int i=let-2; i>let-4; i--){
+					PBOARD[numb-1][i]="O";
+						if(PBOARD[numb-1][i]!="O"){
+							break;
+							count=0;
+							randomshooting();
+						}
+						else{
+							if(PBOARD[numb-1][let-1]!="O"){
+								PBOARD[numb-1][let-1]="-";
+								randomshooting();
+							}
+							count=3;
+							//atiduodam ejima
+						}
+					}
 				}
 			}
-			//show(CBOARD);
+			else if(count==3){
+				if(PBOARD[numb-1][let+1]=="O"){
+					PBOARD[numb-1][let+1]="X";
+					for(int i=numb+2; i<numb+4; i++){
+					PBOARD[i-1][let]="O";
+						if(PBOARD[i-1][let]!="O"){
+							break;
+							count=0;
+							randomshooting();
+						}
+						else{
+							if(PBOARD[numb-1][let+1]!="O"){
+								PBOARD[numb-1][let+1]="-";
+								randomshooting();
+							}
+							count=4;
+							//atiduodam ejima
+						}
+					}
+				}
+			}	
+			else if(count==4){
+				if(PBOARD[numb-1][let+1]=="O"){
+					PBOARD[numb-1][let+1]="X";
+					for(int i=numb-2; i>numb-4; i--){
+					PBOARD[i-1][let]="O";
+						if(PBOARD[i-1][let]!="O"){
+							break;
+							count=0;
+							randomshooting();
+						}
+						else{
+							if(PBOARD[numb-1][let+1]!="O"){
+								PBOARD[numb-1][let+1]="-";
+								randomshooting();
+							}
+							count=4;
+							//atiduodam ejima
+						}
+					}
+				}
+			}
+		}
+	/*	pair<int, int> shoot(){
+			return make_pair(rand()%10)
+		}*/
+	~computer(){
+			for(int i=0; i<Cmax; i++){
+				delete CBOARD[i];
+			}
+			delete [] CBOARD;
 		}
 };
 /***************************************************************************************************************************************************************************/
 int main(){
 	srand (time(NULL));
-	char CBOARD[Cmax][Cmax], PBOARD[Cmax][Cmax];
+	string CBOARD[10][10], PBOARD[10][10];
 	player A;
 	computer B;
 	////////////////////////////////////////
-	cout<<"Zaidejo zemelapis"<<endl;	////
-	A.boardprinting(PBOARD);			////
-	cout<<endl;							////
-	cout<<"----------------------";		////		Zemelapiu isspausdinimas i ekrana
-	cout<<endl;;						////
-	cout<<"Kompiuterio zemelapis"<<endl;////
-	B.boardprinting(CBOARD);			////
+	//cout<<"Zaidejo zemelapis"<<endl;	////
+	//A.boardprinting(PBOARD);			////
+	//cout<<endl;							////
+	//cout<<"----------------------";		////		Zemelapiu isspausdinimas i ekrana
+	//cout<<endl;;						////
+	//cout<<"Kompiuterio zemelapis"<<endl;////
+	//B.boardprinting(CBOARD);			////
 	////////////////////////////////////////
-	cout<<endl;
+	//cout<<endl;
 	B.randomships(4);
-	cout<<endl;
-	//B.show(CBOARD);
-	A.ships(4);	
-	cout<<endl;
+	B.randomships(3);
+	B.randomships(2);
+	B.randomships(1);
+	//cout<<endl;
+	//cout<<endl;
+	A.ships(4);
+	A.ships(3);
+	//B.shooting();
+	//cout<<endl;
+	for(int i=0; i<5; i++){
+		cout<<endl;
+		B.randomshooting();
+	}
 	return 0;
 }
